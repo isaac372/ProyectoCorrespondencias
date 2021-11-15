@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using ProyectoCorrespondencias.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace ProyectoCorrespondencias.Controllers
@@ -15,8 +18,21 @@ namespace ProyectoCorrespondencias.Controllers
         {
             using (CorrespondenciasContext db = new CorrespondenciasContext())
             {
+                ViewBag.Destinatarios = Destinatario();
                 return View(db.Plantillas.ToList());
             }
+        }
+
+        public IList<Destinatario> Destinatario()
+        {
+            IList<Destinatario> destinatario = new List<Destinatario>();
+
+            using (CorrespondenciasContext db = new CorrespondenciasContext())
+            {
+
+                destinatario = db.Destinatarios.ToList();
+            }
+            return destinatario;
         }
 
         public IActionResult Create()
@@ -29,17 +45,52 @@ namespace ProyectoCorrespondencias.Controllers
         {
             try
             {
-                using (CorrespondenciasContext db = new CorrespondenciasContext())
+                if (HttpContext.Session.GetString("Destinatario") != null)
                 {
-                    db.Plantillas.Add(plantilla);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    var destinatario = JsonConvert.DeserializeObject<List<Destinatario>>(HttpContext.Session.GetString("Destinatario"));
+
+                    foreach (var item in destinatario)
+                    {
+                        EnviarCorreo(item);
+                    }
+                    
                 }
+
+                //using (CorrespondenciasContext db = new CorrespondenciasContext())
+                //{
+                //    var destinatario = JsonConvert.DeserializeObject<Destinatario>(HttpContext.Session.GetString("destinatario"));
+
+                //    db.Plantillas.Add(plantilla);
+                //    db.SaveChanges();
+                //    return RedirectToAction("Index");
+                //}
             }
             catch (Exception)
             {
                 return RedirectToAction("Index");
             }
+           
+
+            return RedirectToAction("Index");
+
+
+        }
+
+        public bool EnviarCorreo(Destinatario destinatario)
+        {
+            string emailOrigen = "TestIsaac12@gmail.com";
+            string password = "15@Test$Isaac%";
+
+            MailMessage mailMessage = new MailMessage(emailOrigen, destinatario.Correo, "Test", "<b>teste dddd </b>");
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.EnableSsl = true;
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new System.Net.NetworkCredential(emailOrigen, password);
+            smtpClient.Send(mailMessage);
+            smtpClient.Dispose();
+            return true;
         }
 
         public IActionResult Edit(int id)
@@ -128,6 +179,35 @@ namespace ProyectoCorrespondencias.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult ActualizaSession(int id)
+        {
+            addIdSession(id);
+            return Ok();
+        }
+
+        public void addIdSession(int id)
+        {
+            var aadestinatarios = new List<Destinatario>();
+            using (CorrespondenciasContext db = new CorrespondenciasContext())
+            {
+                Destinatario siExiste = db.Destinatarios.Find(id);
+                if (siExiste != null)
+                {
+                    if (HttpContext.Session.GetString("Destinatario") != null)
+                    {
+                        var destinatario = JsonConvert.DeserializeObject<List<Destinatario>>(HttpContext.Session.GetString("Destinatario"));
+                        destinatario.Add(siExiste);
+                        HttpContext.Session.SetString("Destinatario", JsonConvert.SerializeObject(destinatario));
+                    }
+                    else
+                    {
+                        aadestinatarios.Add(siExiste);
+                        HttpContext.Session.SetString("Destinatario", JsonConvert.SerializeObject(aadestinatarios));
+                    }
+                }
+            }
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
