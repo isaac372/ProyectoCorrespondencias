@@ -7,7 +7,6 @@ namespace ProyectoCorrespondencias.Models
 {
     public class CorreoHtml
     {
-
         public string GetInicioDocHtml()
         {
             var x = @"<!DOCTYPE html>
@@ -38,5 +37,7 @@ namespace ProyectoCorrespondencias.Models
             var x = "</center></body>";
             return x;
         }
+
+
     }
 }

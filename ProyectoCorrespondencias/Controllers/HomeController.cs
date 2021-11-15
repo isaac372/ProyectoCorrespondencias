@@ -14,6 +14,7 @@ namespace ProyectoCorrespondencias.Controllers
 {
     public class HomeController : Controller
     {
+        public string xhtml = "";
         public IActionResult Index()
         {
             using (CorrespondenciasContext db = new CorrespondenciasContext())
@@ -53,7 +54,7 @@ namespace ProyectoCorrespondencias.Controllers
                     {
                         EnviarCorreo(item);
                     }
-                    
+
                 }
 
                 //using (CorrespondenciasContext db = new CorrespondenciasContext())
@@ -69,7 +70,7 @@ namespace ProyectoCorrespondencias.Controllers
             {
                 return RedirectToAction("Index");
             }
-           
+
 
             return RedirectToAction("Index");
 
@@ -78,11 +79,14 @@ namespace ProyectoCorrespondencias.Controllers
 
         public bool EnviarCorreo(Destinatario destinatario)
         {
+            CorreoTemplate TemplatesEmail = new CorreoTemplate();
+            xhtml = "";
+            xhtml = TemplatesEmail.TemplateCorreo("", "");
             string emailOrigen = "TestIsaac12@gmail.com";
             string password = "15@Test$Isaac%";
 
-            MailMessage mailMessage = new MailMessage(emailOrigen, destinatario.Correo, "Test", "<b>teste dddd </b>");
-
+            MailMessage mailMessage = new MailMessage(emailOrigen, destinatario.Correo, "Test", xhtml);
+            
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
             smtpClient.EnableSsl = true;
             smtpClient.UseDefaultCredentials = false;
@@ -93,6 +97,10 @@ namespace ProyectoCorrespondencias.Controllers
             return true;
         }
 
+        public void CrearPdf()
+        {
+
+        }
         public IActionResult Edit(int id)
         {
             try
