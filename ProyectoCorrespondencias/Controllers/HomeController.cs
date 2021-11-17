@@ -50,24 +50,30 @@ namespace ProyectoCorrespondencias.Controllers
                 {
                     var destinatario = JsonConvert.DeserializeObject<List<Destinatario>>(HttpContext.Session.GetString("Destinatario"));
 
-                    foreach (var item in destinatario)
+                    using (CorrespondenciasContext db = new CorrespondenciasContext())
                     {
-                        EnviarCorreo(item);
+
+                        //     db.Plantillas.Add(plantilla);
+                        //   db.SaveChanges();
+
+                        foreach (var item in destinatario)
+                        {
+                            Destinatario siExiste = db.Destinatarios.Find(item.Id);
+
+                            //siExiste.IdPlantilla = plantilla.Id;
+                            //db.Entry(siExiste).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                            //db.SaveChanges();
+
+                            EnviarCorreo(siExiste, plantilla);
+                        }
+
+                        return RedirectToAction("Index");
                     }
-
                 }
-
-                //using (CorrespondenciasContext db = new CorrespondenciasContext())
-                //{
-                //    var destinatario = JsonConvert.DeserializeObject<Destinatario>(HttpContext.Session.GetString("destinatario"));
-
-                //    db.Plantillas.Add(plantilla);
-                //    db.SaveChanges();
-                //    return RedirectToAction("Index");
-                //}
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                var mensaje = e.Message;
                 return RedirectToAction("Index");
             }
 
@@ -77,16 +83,22 @@ namespace ProyectoCorrespondencias.Controllers
 
         }
 
-        public bool EnviarCorreo(Destinatario destinatario)
+        public bool EnviarCorreo(Destinatario destinatario, Plantilla plantilla)
         {
             CorreoTemplate TemplatesEmail = new CorreoTemplate();
             xhtml = "";
-            xhtml = TemplatesEmail.TemplateCorreo("", "");
+            plantilla.Contacto = destinatario.Nombre;
+            xhtml = TemplatesEmail.TemplateCorreo(plantilla, "");
             string emailOrigen = "TestIsaac12@gmail.com";
             string password = "15@Test$Isaac%";
 
             MailMessage mailMessage = new MailMessage(emailOrigen, destinatario.Correo, "Test", xhtml);
-            
+
+            mailMessage.SubjectEncoding = System.Text.Encoding.UTF8;
+            mailMessage.BodyEncoding = System.Text.Encoding.UTF8;
+            mailMessage.Priority = MailPriority.High;
+            mailMessage.IsBodyHtml = true;
+
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
             smtpClient.EnableSsl = true;
             smtpClient.UseDefaultCredentials = false;
@@ -202,6 +214,7 @@ namespace ProyectoCorrespondencias.Controllers
                 Destinatario siExiste = db.Destinatarios.Find(id);
                 if (siExiste != null)
                 {
+                    TempData["UsuarioAgregado"] = "Usuario Agregado" + siExiste.Nombre;
                     if (HttpContext.Session.GetString("Destinatario") != null)
                     {
                         var destinatario = JsonConvert.DeserializeObject<List<Destinatario>>(HttpContext.Session.GetString("Destinatario"));

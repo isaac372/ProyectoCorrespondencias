@@ -38,6 +38,77 @@ namespace ProyectoCorrespondencias.Models
             return x;
         }
 
+        public string DataHtml(Plantilla plantilla)
+        {
+            var x = @"<table class=""body-wrap"">
+          <tr>
+              <td></td>
+              <td class=""container"" width=""600"">
+                <div class=""content"">
+                    <table class=""main"" width=""100%"" cellpadding=""0"" cellspacing=""0"">
+                        <tr>
+                            <td class=""content-wrap"">
+                                <table cellpadding = ""0"" cellspacing=""0"">
+                                    <tr>
+                                        <td>
+                                            <img class=""img-responsive"" src=""https://img.freepik.com/vector-gratis/feliz-cumpleanos-concepto_23-2148484501.jpg?size=338&ext=jpg""/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class=""content-block"">
+                                            <h3>@Titulo</h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class=""content-block"">
+                                    @Descripcion
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class=""content-block"">
+                                          @Direccion
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                       <td class=""content-block"">
+                                          @Fecha
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                       <td class=""content-block"">
+                                          @Contribucion
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                       <td class=""content-block"">
+                                         Estas invitado   @Contacto
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class=""footer"">
+                        <table width = ""100%"">
+                            <tr>
+                                <td class=""aligncenter content-block"">Correspondencia</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </td>
+            <td></td>
+        </tr>
+    </table>";
+            x = x.Replace("@Titulo", plantilla.Titulo);
+            x = x.Replace("@Descripcion", plantilla.Descripcion);
+            x = x.Replace("@Direccion", plantilla.Direccion);
+            x = x.Replace("@Fecha", plantilla.Fecha.ToString());
+            x = x.Replace("@Contribucion", plantilla.Contribucion);
+            x = x.Replace("@Contacto", plantilla.Contacto);
+            return x;
+        }
+
 
     }
 }

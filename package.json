@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@dashboardcode/bsmultiselect": "^1.1.18"
+    "@dashboardcode/bsmultiselect": "^1.1.18",
+    "sweetalert2": "^11.1.10"
   }
 }
