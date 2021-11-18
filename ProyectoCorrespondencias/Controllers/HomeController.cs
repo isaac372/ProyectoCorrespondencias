@@ -52,7 +52,7 @@ namespace ProyectoCorrespondencias.Controllers
 
                     using (CorrespondenciasContext db = new CorrespondenciasContext())
                     {
-
+                        plantilla.Contacto = "exito";
                         db.Plantillas.Add(plantilla);
                         db.SaveChanges();
 
@@ -60,9 +60,9 @@ namespace ProyectoCorrespondencias.Controllers
                         {
                             Destinatario siExiste = db.Destinatarios.Find(item.Id);
 
-                            //siExiste.IdPlantilla = plantilla.Id;
-                            //db.Entry(siExiste).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                            //db.SaveChanges();
+                            siExiste.IdPlantilla = plantilla.Id;
+                            db.Entry(siExiste).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                            db.SaveChanges();
 
                             EnviarCorreo(siExiste, plantilla);
                         }
@@ -77,10 +77,7 @@ namespace ProyectoCorrespondencias.Controllers
                 return RedirectToAction("Index");
             }
 
-
             return RedirectToAction("Index");
-
-
         }
 
         public bool EnviarCorreo(Destinatario destinatario, Plantilla plantilla)
@@ -108,11 +105,7 @@ namespace ProyectoCorrespondencias.Controllers
             smtpClient.Dispose();
             return true;
         }
-
-        public void CrearPdf()
-        {
-
-        }
+      
         public IActionResult Edit(int id)
         {
             try
