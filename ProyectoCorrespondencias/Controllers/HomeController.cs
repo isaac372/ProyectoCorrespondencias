@@ -53,8 +53,8 @@ namespace ProyectoCorrespondencias.Controllers
                     using (CorrespondenciasContext db = new CorrespondenciasContext())
                     {
 
-                        //     db.Plantillas.Add(plantilla);
-                        //   db.SaveChanges();
+                        db.Plantillas.Add(plantilla);
+                        db.SaveChanges();
 
                         foreach (var item in destinatario)
                         {

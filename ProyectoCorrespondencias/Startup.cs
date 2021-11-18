@@ -26,7 +26,7 @@ namespace ProyectoCorrespondencias
             services.AddControllersWithViews();
             services.AddSession(option =>
             {
-                option.IdleTimeout = TimeSpan.FromSeconds(15);
+                option.IdleTimeout = TimeSpan.FromMinutes(10);
             });
         }
 
