@@ -36,6 +36,7 @@ namespace ProyectoCorrespondencias.Controllers
             return destinatario;
         }
 
+
         public IActionResult Create()
         {
             return View();
@@ -63,12 +64,12 @@ namespace ProyectoCorrespondencias.Controllers
                             siExiste.IdPlantilla = plantilla.Id;
                             db.Entry(siExiste).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                             db.SaveChanges();
-
                             EnviarCorreo(siExiste, plantilla);
                         }
-
+                        HttpContext.Session.Remove("Destinatario");
                         return RedirectToAction("Index");
                     }
+
                 }
             }
             catch (Exception e)
@@ -79,6 +80,8 @@ namespace ProyectoCorrespondencias.Controllers
 
             return RedirectToAction("Index");
         }
+
+
 
         public bool EnviarCorreo(Destinatario destinatario, Plantilla plantilla)
         {
@@ -105,7 +108,7 @@ namespace ProyectoCorrespondencias.Controllers
             smtpClient.Dispose();
             return true;
         }
-      
+
         public IActionResult Edit(int id)
         {
             try
@@ -156,6 +159,8 @@ namespace ProyectoCorrespondencias.Controllers
                 using (CorrespondenciasContext db = new CorrespondenciasContext())
                 {
                     Plantilla siExiste = db.Plantillas.Find(id);
+                    siExiste.Destinatarios = DestinatarioIdPlantilla(siExiste.Id);
+
                     return View(siExiste);
                 }
             }
@@ -165,11 +170,17 @@ namespace ProyectoCorrespondencias.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Details(Plantilla plantilla)
+        public IList<Destinatario> DestinatarioIdPlantilla(int id)
         {
-            return View();
+            IList<Destinatario> destinatario = new List<Destinatario>();
+
+            using (CorrespondenciasContext db = new CorrespondenciasContext())
+            {
+                destinatario = db.Destinatarios.Where(e => e.IdPlantilla == id).ToList();
+            }
+            return destinatario;
         }
+
         public IActionResult Delete(int id)
         {
             try
@@ -189,7 +200,20 @@ namespace ProyectoCorrespondencias.Controllers
         [HttpPost]
         public IActionResult Delete(Plantilla plantilla)
         {
-            return View();
+            try
+            {
+                using (CorrespondenciasContext db = new CorrespondenciasContext())
+                {
+                    Plantilla siExiste = db.Plantillas.Find(plantilla.Id);
+                    db.Remove(siExiste);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Delete");
+            }
         }
 
         [HttpPost]
