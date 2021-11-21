@@ -89,8 +89,8 @@ namespace ProyectoCorrespondencias.Controllers
             xhtml = "";
             plantilla.Contacto = destinatario.Nombre;
             xhtml = TemplatesEmail.TemplateCorreo(plantilla, "");
-            string emailOrigen = "TestIsaac12@gmail.com";
-            string password = "15@Test$Isaac%";
+            string emailOrigen = "ingresa tu correo ";
+            string password = "ingresa tu password";
 
             MailMessage mailMessage = new MailMessage(emailOrigen, destinatario.Correo, "Test", xhtml);
 
